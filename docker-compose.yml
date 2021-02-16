@@ -1,0 +1,35 @@
+version: "3.8"
+
+services:
+  www:
+    image: caddy:2.3.0-alpine
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+      - ./www:/srv
+      - ./Caddyfile:/etc/caddy/Caddyfile
+    links:
+      - php
+      - mariadb
+    ports:
+      - 8080:8080
+
+  php:
+    build: ./php
+    volumes:
+      - ./www:/srv
+
+  mariadb:
+    image: mariadb:10.5.8-focal
+    volumes:
+      - mariadb:/var/lib/mysql
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_DATABASE: wp
+    ports:
+      - 3306:3306
+
+volumes:
+  caddy_data:
+  caddy_config:
+  mariadb:
